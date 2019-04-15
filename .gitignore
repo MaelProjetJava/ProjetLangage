@@ -1,0 +1,5 @@
+*
+!*.ml
+!*.txt
+!.gitignore
+!.gitattributes
