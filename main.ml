@@ -25,7 +25,7 @@ let rec not_in_list c = function
 
 exception NotInAlphabet of char;;
 
-let accepte afd str =
+let accepte_afd afd str =
 	let rec helper str state =
 		(afd.e state).accept || (
 			if (String.length str) = 0 then
@@ -86,8 +86,8 @@ let afd_test = {
 		}
 };;
 
-accepte afd_test "GTGCCGAGCTGAGTTCCTTATAAGAATTAATCTTAATTTTGTATTTTTTCCTGTAAGA";;
+accepte_afd afd_test "GTGCCGAGCTGAGTTCCTTATAAGAATTAATCTTAATTTTGTATTTTTTCCTGTAAGA";;
 (* - : bool = true *)
 
-accepte afd_test "GTGCCGAGCTGAGTTCCTATAAGAATTAATCTTTTTTGTATTTTTTCCTGTAAGA";;
+accepte_afd afd_test "GTGCCGAGCTGAGTTCCTATAAGAATTAATCTTTTTTGTATTTTTTCCTGTAAGA";;
 (* - : bool = false *)
