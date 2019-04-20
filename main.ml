@@ -8,15 +8,20 @@ type afd = {sigma: char list; nQ: int; init: int; e: int -> etat};;
 
 let tetec = function
 | "" -> failwith "Erreur: chaine vide"
-| s -> s.[0] ;;
+| s -> s.[0];;
+(* val tetec : string -> char = <fun> *)
 
 let reste = function
 | "" -> failwith "Erreur: chaine vide"
-| s -> String.sub s 1  ((String.length s) - 1 ) ;;
+| s -> String.sub s 1  ((String.length s) - 1);;
+(* val reste : string -> string = <fun> *)
 
 let rec not_in_list c = function
 	x::l -> (c <> x) && (not_in_list c l)
 	| _ -> true;;
+(* val not_in_list : 'a -> 'a list -> bool = <fun> *)
+
+
 
 exception NotInAlphabet of char;;
 
