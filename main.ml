@@ -40,6 +40,7 @@ let accepte_afd afd str =
 		)
 	in
 		helper str afd.init;;
+(* val accepte_afd : afd -> string -> bool = <fun> *)
 
 (* ----- Tests pour les fonctions de lectures ----- *)
 
