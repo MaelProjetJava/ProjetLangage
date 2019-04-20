@@ -4,6 +4,11 @@ type etat = {accept: bool; t: char -> int};;
 
 type afd = {sigma: char list; nQ: int; init: int; e: int -> etat};;
 
+
+type etatN = {acceptN: bool; tN: char -> int list};;
+
+type afn = {sigmaN: char list; nN: int; initN: int list; eN : int -> etatN};;
+
 (* ----- Fonctions de lecture ----- *)
 
 let tetec = function
@@ -41,6 +46,26 @@ let accepte_afd afd str =
 	in
 		helper str afd.init;;
 (* val accepte_afd : afd -> string -> bool = <fun> *)
+
+let accepte_afn afn str =
+	let rec helper str = function
+		state::states ->
+			(afn.eN state).acceptN  || (
+				if (String.length str) = 0 then
+					helper str states
+				else
+					let current_char = tetec str in
+						if not_in_list current_char afn.sigmaN then
+							raise (NotInAlphabet current_char)
+						else
+							(try helper (reste str) ((afn.eN state).tN current_char) with
+								Match_failure _ -> false)
+							|| (helper str states)
+			)
+		| _ -> false
+	in
+		helper str afn.initN;;
+(* val accepte_afn : afn -> string -> bool = <fun> *)
 
 (* ----- Tests pour les fonctions de lectures ----- *)
 
@@ -87,6 +112,40 @@ let afd_test = {
 		}
 };;
 
+let afn_test = {
+	sigmaN = ['A'; 'C'; 'G'; 'T'];
+	nN = 5;
+	initN = [1];
+	eN = function
+		1 -> {
+			acceptN = false;
+			tN = function
+				'C' -> [2;1]
+				| 'A' -> [1]
+				| 'G' -> [1]
+				| 'T' -> [1]
+		}
+		| 2 -> {
+			acceptN = false;
+			tN = function
+				'T' -> [3]
+		}
+		| 3 -> {
+			acceptN = false;
+			tN = function
+				'T' -> [4]
+		}
+		| 4 -> {
+			acceptN = false;
+			tN = function
+				'A' -> [5]
+		}
+		| 5 -> {
+			acceptN = true;
+			tN = function _ -> []
+		}
+};;
+
 let matching_str = "GTGCCGAGCTGAGTTCCTTATAAGAATTAATCTTAATTTTGTATTTTTTCCTGTAAGA";;
 let unmatching_str = "GTGCCGAGCTGAGTTCCTATAAGAATTAATCTTTTTTGTATTTTTTCCTGTAAGA";;
 
@@ -94,4 +153,10 @@ accepte_afd afd_test matching_str;;
 (* - : bool = true *)
 
 accepte_afd afd_test unmatching_str;;
+(* - : bool = false *)
+
+accepte_afn afn_test matching_str;;
+(* - : bool = true *)
+
+accepte_afn afn_test unmatching_str;;
 (* - : bool = false *)
