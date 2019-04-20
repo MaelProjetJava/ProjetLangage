@@ -87,8 +87,11 @@ let afd_test = {
 		}
 };;
 
-accepte_afd afd_test "GTGCCGAGCTGAGTTCCTTATAAGAATTAATCTTAATTTTGTATTTTTTCCTGTAAGA";;
+let matching_str = "GTGCCGAGCTGAGTTCCTTATAAGAATTAATCTTAATTTTGTATTTTTTCCTGTAAGA";;
+let unmatching_str = "GTGCCGAGCTGAGTTCCTATAAGAATTAATCTTTTTTGTATTTTTTCCTGTAAGA";;
+
+accepte_afd afd_test matching_str;;
 (* - : bool = true *)
 
-accepte_afd afd_test "GTGCCGAGCTGAGTTCCTATAAGAATTAATCTTTTTTGTATTTTTTCCTGTAAGA";;
+accepte_afd afd_test unmatching_str;;
 (* - : bool = false *)
