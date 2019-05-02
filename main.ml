@@ -67,6 +67,64 @@ let accepte_afn afn str =
 		helper str afn.initN;;
 (* val accepte_afn : afn -> string -> bool = <fun> *)
 
+(* ----- Création automate non-déterminite ----- *)
+
+let creer_afn_base first_char = {
+	sigmaN = ['A'; 'C'; 'G'; 'T'];
+	nN = 1;
+	initN = [1];
+	eN = function
+		1 ->  {
+			acceptN = false;
+			tN = function c ->
+					if c <> first_char then
+						[1]
+					else
+						[1;2]
+		}
+};;
+
+let finaliser_afn seq_afn = {
+	sigmaN = seq_afn.sigmaN;
+	nN = seq_afn.nN + 1;
+	initN = seq_afn.initN;
+	eN = function x ->
+		if x = seq_afn.nN + 1 then
+			{
+				acceptN = true;
+				tN = function _ -> []
+			}
+		else
+			seq_afn.eN x
+};;
+
+let ajouter_ieme_char seq_afn str i = {
+	sigmaN = seq_afn.sigmaN;
+	nN = seq_afn.nN + 1;
+	initN = seq_afn.initN;
+	eN = function x ->
+			if x = i then
+				{
+					acceptN = false;
+					tN = function c ->
+							if c = str.[i - 1] then
+								[i + 1]
+							else
+								raise (Match_failure ("", 0, 0))
+				}
+			else
+				seq_afn.eN x
+};;
+
+let creer_afn str =
+	let rec helper seq_afn str i =
+		if i <= String.length str then
+			helper (ajouter_ieme_char seq_afn str i) str (i + 1)
+		else
+			seq_afn
+	in
+		finaliser_afn (helper (creer_afn_base str.[0]) str 2);;
+
 (* ----- Tests pour les fonctions de lectures ----- *)
 
 let afd_test = {
