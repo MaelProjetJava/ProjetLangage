@@ -232,6 +232,38 @@ let rec afficher_transitions_afd t_func = function
 		(afficher_transitions_afd t_func sigma_t)
 	| _ -> "";;
 
+(*
+ * On remercie chaleureusement la puissance de OCaml qui ne permet pas de factoriser les fonctions
+ * afficher_liste_etats et afficher_sigma et bon nombre d'autres fonctions ci-dessous. Certains
+ * forums suggèrent de recourir à une fonction en C externe pour outrepasser ces limitations, de
+ * quoi se poser des questions...
+ *)
+let afficher_liste_etats liste =
+	let rec helper = function
+		l::liste_t -> let str_l = (string_of_int l) in
+			(if List.length liste_t <> 0 then
+				str_l ^ ", "
+			else
+				str_l) ^ helper liste_t
+		| _ -> "]"
+	in
+		"[" ^ (helper liste)
+;;
+
+let rec afficher_transitions_afn t_func = function
+	l::sigma_t ->
+		(try
+			"\t\t\t'" ^
+			(String.make 1 l) ^
+			"' -> " ^
+			(afficher_liste_etats (t_func l)) ^
+			"\n"
+		with
+			Match_failure _ -> "") ^
+		(afficher_transitions_afn t_func sigma_t)
+	| _ -> ""
+;;
+
 let afficher_etat_afd afd i =
 	let etat = afd.e i in
 		"\t\t" ^
@@ -242,10 +274,31 @@ let afficher_etat_afd afd i =
 		"\t\t}\n"
 ;;
 
+let afficher_etat_afn afn i =
+	let etat = afn.eN i in
+		"\t\t" ^
+		(string_of_int i) ^
+		" -> {\n" ^
+		"\t\t\taccept = " ^ (string_of_bool etat.acceptN) ^ "\n" ^
+		(afficher_transitions_afn etat.tN afn.sigmaN) ^
+		"\t\t}\n"
+;;
+
 let afficher_tous_etats_afd afd =
 	let rec helper i =
 		if i <= afd.nQ then
 			(afficher_etat_afd afd i) ^ helper (i + 1)
+		else
+			""
+	in
+		helper 1
+;;
+
+(* Et encore un peu plus de code doublon... *)
+let afficher_tous_etats_afn afn =
+	let rec helper i =
+		if i <= afn.nN then
+			(afficher_etat_afn afn i) ^ helper (i + 1)
 		else
 			""
 	in
@@ -272,6 +325,18 @@ print_string (
 	"\tinit = " ^ (string_of_int afd.init) ^ "\n" ^
 	"\te = \n" ^
 	(afficher_tous_etats_afd afd) ^
+	"}\n"
+);;
+
+(* Désespérant... *)
+let afficher_afn afn =
+print_string (
+	"{\n" ^
+	"\tsigma = " ^ (afficher_sigma afn.sigmaN) ^ "\n" ^
+	"\tnQ = " ^ (string_of_int afn.nN) ^ "\n" ^
+	"\tinit = " ^ (afficher_liste_etats afn.initN) ^ "\n" ^
+	"\te = \n" ^
+	(afficher_tous_etats_afn afn) ^
 	"}\n"
 );;
 
