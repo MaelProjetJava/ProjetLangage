@@ -155,9 +155,9 @@ let afd_test = {
 		| 3 -> {
 			accept = false;
 			t = function
-				'T' -> 4
+				'C' -> 4
 				| 'A' -> 1
-				| 'C' -> 1
+				| 'T' -> 1
 				| 'G' -> 1
 		}
 		| 4 -> {
@@ -166,7 +166,7 @@ let afd_test = {
 				'A' -> 5
 				| 'C' -> 1
 				| 'G' -> 1
-				| 'T' -> 1
+				| 'T' -> 3
 		}
 		| 5 -> {
 			accept = true;
@@ -195,7 +195,7 @@ let afn_test = {
 		| 3 -> {
 			acceptN = false;
 			tN = function
-				'T' -> [4]
+				'C' -> [4]
 		}
 		| 4 -> {
 			acceptN = false;
@@ -208,8 +208,8 @@ let afn_test = {
 		}
 };;
 
-let matching_str = "GTGCCGAGCTGAGTTCCTTATAAGAATTAATCTTAATTTTGTATTTTTTCCTGTAAGA";;
-let unmatching_str = "GTGCCGAGCTGAGTTCCTATAAGAATTAATCTTTTTTGTATTTTTTCCTGTAAGA";;
+let matching_str = "GTGCCGAGCTGAGTTCGCTCTCATAAGAATTAATCTTAATTTTGTATTTTTTCCTGTAAGA";;
+let unmatching_str = "GTGCCGAGCTGAGTTCCTCTCCTATAAGAATTAATCTTAATTTTGTATTTTTTCCTGTAAGA";;
 
 accepte_afd afd_test matching_str;;
 (* - : bool = true *)
