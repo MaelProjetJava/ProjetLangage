@@ -433,3 +433,23 @@ accepte_afn afn_test matching_str;;
 
 accepte_afn afn_test unmatching_str;;
 (* - : bool = false *)
+
+(* ----- Tests pour les fonctions de créations ----- *)
+
+let afd_auto = creer_afd "CTCA";;
+afficher_afd afd_auto;;
+
+let afn_auto = creer_afn "CTCA";;
+afficher_afn afn_auto;;
+
+accepte_afd afd_auto matching_str;;
+(* - : bool = true *)
+
+accepte_afd afd_auto unmatching_str;;
+(* - : bool = false *)
+
+accepte_afn afn_auto matching_str;;
+(* - : bool = true *)
+
+accepte_afn afn_auto unmatching_str;;
+(* - : bool = false *)
