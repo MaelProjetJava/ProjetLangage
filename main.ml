@@ -226,10 +226,10 @@ let rec afficher_transitions_afd t_func = function
 			(String.make 1 l) ^
 			"' -> " ^
 			(string_of_int (t_func l)) ^
-			"\n" ^
-			(afficher_transitions_afd t_func sigma_t)
+			"\n"
 		with
-			Match_failure _ -> "")
+			Match_failure _ -> "") ^
+		(afficher_transitions_afd t_func sigma_t)
 	| _ -> "";;
 
 let afficher_etat_afd afd i =
