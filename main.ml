@@ -217,6 +217,64 @@ let creer_afd str =
 ;;
 (* val creer_afd : string -> afd = <fun> *)
 
+(* ----- Fonctions d'affichage ----- *)
+
+let rec afficher_transitions_afd t_func = function
+	l::sigma_t ->
+		(try
+			"\t\t\t'" ^
+			(String.make 1 l) ^
+			"' -> " ^
+			(string_of_int (t_func l)) ^
+			"\n" ^
+			(afficher_transitions_afd t_func sigma_t)
+		with
+			Match_failure _ -> "")
+	| _ -> "";;
+
+let afficher_etat_afd afd i =
+	let etat = afd.e i in
+		"\t\t" ^
+		(string_of_int i) ^
+		" -> {\n" ^
+		"\t\t\taccept = " ^ (string_of_bool etat.accept) ^ "\n" ^
+		(afficher_transitions_afd etat.t afd.sigma) ^
+		"\t\t}\n"
+;;
+
+let afficher_tous_etats_afd afd =
+	let rec helper i =
+		if i <= afd.nQ then
+			(afficher_etat_afd afd i) ^ helper (i + 1)
+		else
+			""
+	in
+		helper 1
+;;
+
+let afficher_sigma sigma =
+	let rec helper = function
+		l::sigma_t -> let str_l = (String.make 1 l) in
+			(if List.length sigma_t <> 0 then
+				str_l ^ ", "
+			else
+				str_l) ^ helper sigma_t
+		| _ -> "]"
+	in
+		"[" ^ (helper sigma)
+;;
+
+let afficher_afd afd =
+print_string (
+	"{\n" ^
+	"\tsigma = " ^ (afficher_sigma afd.sigma) ^ "\n" ^
+	"\tnQ = " ^ (string_of_int afd.nQ) ^ "\n" ^
+	"\tinit = " ^ (string_of_int afd.init) ^ "\n" ^
+	"\te = \n" ^
+	(afficher_tous_etats_afd afd) ^
+	"}\n"
+);;
+
 (* ----- Tests pour les fonctions de lectures ----- *)
 
 let afd_test = {
