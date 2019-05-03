@@ -129,6 +129,94 @@ let creer_afn str =
 		finaliser_afn (helper (creer_afn_base str.[0]) 2);;
 (* val creer_afn : string -> afn = <fun> *)
 
+(* ----- Création automate déterministe ----- *)
+
+let rec est_prefixe prefixe str = (String.length prefixe = 0) ||
+	(String.length str <> 0 && prefixe.[0] = str.[0] && est_prefixe (reste prefixe) (reste str));;
+(* val est_prefixe : string -> string -> bool = <fun> *)
+
+let afd_base = {
+	sigma = ['A'; 'C'; 'G'; 'T'];
+	nQ = 0;
+	init = 1;
+	e = function _ -> raise (Match_failure ("", 0, 0))
+};;
+(* val afd_base : afd = {sigma = ['A'; 'C'; 'G'; 'T']; nQ = 0; init = 1; e = <fun>} *)
+
+let ajouter_transition seq_afd i lettre j = {
+	sigma = seq_afd.sigma;
+	nQ = seq_afd.nQ;
+	init = seq_afd.init;
+	e = function x ->
+		if x = i then
+			let ancien_etat = try seq_afd.e x with
+					Match_failure _ -> {
+						accept = false;
+						t = function _ -> raise (Match_failure ("", 0, 0))
+					}
+			in
+				{
+					accept = ancien_etat.accept;
+					t = function c ->
+						if c = lettre then
+							j
+						else
+							ancien_etat.t c
+				}
+		else
+			seq_afd.e x
+};;
+(* val ajouter_transition : afd -> int -> char -> int -> afd = <fun> *)
+
+let calculer_transition seq_afd str i lettre =
+	let rec helper j =
+		if j > i then
+			ajouter_transition seq_afd (i + 1) lettre 1
+		else
+			let len_prefixe = i - j in
+				if est_prefixe (String.sub str j (len_prefixe)) str && str.[len_prefixe] = lettre then
+					ajouter_transition seq_afd (i + 1) lettre (i - j + 2)
+				else
+					helper (j + 1)
+	in
+		helper 0;;
+(* val calculer_transition : afd -> string -> int -> char -> afd = <fun> *)
+
+let rec calculer_transitions_sigma seq_afd str i = function
+	l::sigma_t -> calculer_transitions_sigma (calculer_transition seq_afd str i l) str i sigma_t
+	| _ -> seq_afd
+;;
+(* val calculer_transitions_sigma : afd -> string -> int -> char list -> afd = <fun> *)
+
+let finaliser_afd seq_afd len_str =
+	let nQ = len_str + 1 in
+		{
+			sigma = seq_afd.sigma;
+			nQ = nQ;
+			init = seq_afd.init;
+			e = function x ->
+				if x = nQ then
+					{
+						accept = true;
+						t = function _ -> raise (Match_failure ("", 0, 0))
+					}
+				else
+					seq_afd.e x
+		};;
+(* val val finaliser_afd : afd -> int -> afd = <fun> *)
+
+let creer_afd str =
+	let len_str = String.length str in
+	let rec helper seq_afd i =
+		if i < len_str then
+			helper (calculer_transitions_sigma seq_afd str i seq_afd.sigma) (i + 1)
+		else
+			seq_afd
+	in
+		finaliser_afd (helper afd_base 0) len_str
+;;
+(* val creer_afd : string -> afd = <fun> *)
+
 (* ----- Tests pour les fonctions de lectures ----- *)
 
 let afd_test = {
