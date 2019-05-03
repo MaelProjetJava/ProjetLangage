@@ -83,6 +83,7 @@ let creer_afn_base first_char = {
 						[1;2]
 		}
 };;
+(* val creer_afn_base : char -> afn = <fun> *)
 
 let finaliser_afn seq_afn = {
 	sigmaN = seq_afn.sigmaN;
@@ -97,6 +98,7 @@ let finaliser_afn seq_afn = {
 		else
 			seq_afn.eN x
 };;
+(* val finaliser_afn : afn -> afn = <fun> *)
 
 let ajouter_ieme_char seq_afn str i = {
 	sigmaN = seq_afn.sigmaN;
@@ -115,6 +117,7 @@ let ajouter_ieme_char seq_afn str i = {
 			else
 				seq_afn.eN x
 };;
+(* val ajouter_ieme_char : afn -> string -> int -> afn = <fun> *)
 
 let creer_afn str =
 	let rec helper seq_afn str i =
@@ -124,6 +127,7 @@ let creer_afn str =
 			seq_afn
 	in
 		finaliser_afn (helper (creer_afn_base str.[0]) str 2);;
+(* val creer_afn : string -> afn = <fun> *)
 
 (* ----- Tests pour les fonctions de lectures ----- *)
 
