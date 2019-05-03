@@ -237,7 +237,7 @@ let afd_test = {
 			t = function
 				'T' -> 3
 				| 'A' -> 1
-				| 'C' -> 1
+				| 'C' -> 2
 				| 'G' -> 1
 		}
 		| 3 -> {
@@ -252,13 +252,13 @@ let afd_test = {
 			accept = false;
 			t = function
 				'A' -> 5
-				| 'C' -> 1
+				| 'C' -> 2
 				| 'G' -> 1
 				| 'T' -> 3
 		}
 		| 5 -> {
 			accept = true;
-			t = function _ -> 1
+			t = function _ -> raise (Match_failure ("", 0, 0))
 		}
 };;
 
