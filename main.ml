@@ -120,13 +120,13 @@ let ajouter_ieme_char seq_afn str i = {
 (* val ajouter_ieme_char : afn -> string -> int -> afn = <fun> *)
 
 let creer_afn str =
-	let rec helper seq_afn str i =
+	let rec helper seq_afn i =
 		if i <= String.length str then
-			helper (ajouter_ieme_char seq_afn str i) str (i + 1)
+			helper (ajouter_ieme_char seq_afn str i) (i + 1)
 		else
 			seq_afn
 	in
-		finaliser_afn (helper (creer_afn_base str.[0]) str 2);;
+		finaliser_afn (helper (creer_afn_base str.[0]) 2);;
 (* val creer_afn : string -> afn = <fun> *)
 
 (* ----- Tests pour les fonctions de lectures ----- *)
