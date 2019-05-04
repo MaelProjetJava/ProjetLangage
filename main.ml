@@ -453,3 +453,59 @@ accepte_afn afn_auto matching_str;;
 
 accepte_afn afn_auto unmatching_str;;
 (* - : bool = false *)
+
+(* ----- Tests de vitesse en 'situation réelle' ----- *)
+
+let readfile filename =
+	let channel = open_in filename in
+		try (input_line channel) with
+		End_of_file -> let _ = close_in channel in ""
+;;
+
+let dna_sequence = readfile "dna_sequence.txt";;
+let w_match =   "ACTGTGCCACTGCA";;
+let w_nomatch = "CTTACGTCATACCG";;
+
+
+
+let start_afd_build = Sys.time();;
+let afd_speed_match = creer_afd w_match;;
+let afd_speed_nomatch = creer_afd w_nomatch;;
+let end_afd_build = Sys.time();;
+let afd_build_time = end_afd_build -. start_afd_build;;
+
+let start_afd_match = Sys.time();;
+accepte_afd afd_speed_match dna_sequence;;
+accepte_afd afd_speed_nomatch dna_sequence;;
+let end_afd_match = Sys.time();;
+let afd_time_match = end_afd_match -. start_afd_match;;
+
+
+
+let start_afn_build = Sys.time();;
+let afn_speed_match = creer_afn w_match;;
+let afn_speed_nomatch = creer_afn w_nomatch;;
+let end_afn_build = Sys.time();;
+let afn_build_time = end_afn_build -. start_afn_build;;
+
+let start_afn_match = Sys.time();;
+accepte_afn afn_speed_match dna_sequence;;
+accepte_afn afn_speed_nomatch dna_sequence;;
+let end_afn_match = Sys.time();;
+let afn_time_match = end_afn_match -. start_afn_match;;
+
+print_string (
+	"Déterministe:\n\tTemps construction: " ^
+	(string_of_float afd_build_time) ^
+	"\n\tTemps exécution: " ^
+	(string_of_float afd_time_match) ^
+	"\n\tTotal: " ^
+	(string_of_float (afd_build_time +. afd_time_match)) ^
+	"\nNon-déterministe:\n\tTemps construction: " ^
+	(string_of_float afn_build_time) ^
+	"\n\tTemps exécution: " ^
+	(string_of_float afn_time_match) ^
+	"\n\tTotal: " ^
+	(string_of_float (afn_build_time +. afn_time_match)) ^
+	"\n"
+);;
